@@ -84,7 +84,7 @@ def rasterize_pdf(
     filter_vector: bool = False,
 ):
 
-    dpi = Resolution(600, 600)
+    dpi = Resolution(tgt_dpi, tgt_dpi)
 
     with open(input_file, 'rb') as data:
         # load data into a IO stream buffer
@@ -92,10 +92,6 @@ def rasterize_pdf(
         dataBytesReady = dataBytes.getvalue()  # then read the entire file and store as a variable in memory
     pdftoppm = run(['pdftoppm', '-q', '-scale-to-x', '4000', '-scale-to-y', '-1', '-f', str(pageno), '-l', str(pageno), '-'], stdout=PIPE, input=dataBytesReady)  # pass the stream to pdftoppm as STDIN. - parameter at the end means read from stdin
     pnmtopng = run(['pnmtopng', '-compression', '9', '-downscale', '-quiet'], stdout=PIPE, input=pdftoppm.stdout)
-    # pngToUpload = bytes(pnmtopng.stdout)
-    # pngToUploadReadable = BytesIO(pngToUpload)
-    # pngToUploadReadableValue = pngToUploadReadable.getvalue()
-
 
     with Image.open(BytesIO(pnmtopng.stdout)) as im:
         if rotation is not None:
@@ -109,15 +105,8 @@ def rasterize_pdf(
             elif rotation == 270:
                 im = im.transpose(Image.ROTATE_270)
             if rotation % 180 == 90:
-                page_dpi = page_dpi.flip_axis()
-        im.save(fspath(output_file), dpi=dpi) #page_dpi)
-
-
-    # with open(output_file, 'wb') as f:
-    #     f.write(pngToUploadReadableValue)
-    #
-    # with open(f'test_image_{pageno}.png', 'wb') as f:
-    #     f.write(pngToUploadReadableValue)
+                dpi = page_dpi.flip_axis()
+        im.save(fspath(output_file), dpi=dpi)
 
 
 def rasterize_pdf1(
