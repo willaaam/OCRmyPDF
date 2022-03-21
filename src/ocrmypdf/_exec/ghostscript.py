@@ -71,8 +71,55 @@ def jpeg_passthrough_available() -> bool:
 def _gs_error_reported(stream) -> bool:
     return True if re.search(r'error', stream, flags=re.IGNORECASE) else False
 
-
 def rasterize_pdf(
+    input_file: os.PathLike,
+    output_file: os.PathLike,
+    *,
+    raster_device: str,
+    raster_dpi: Resolution,
+    pageno: int = 1,
+    page_dpi: Optional[Resolution] = None,
+    rotation: Optional[int] = None,
+    filter_vector: bool = False,
+):
+
+    dpi = Resolution(600, 600)
+
+    with open(input_file, 'rb') as data:
+        # load data into a IO stream buffer
+        dataBytes = BytesIO(data.read())  # first read the contents of the link
+        dataBytesReady = dataBytes.getvalue()  # then read the entire file and store as a variable in memory
+    pdftoppm = run(['pdftoppm', '-q', '-scale-to-x', '4000', '-scale-to-y', '-1', '-f', str(pageno), '-l', str(pageno), '-'], stdout=PIPE, input=dataBytesReady)  # pass the stream to pdftoppm as STDIN. - parameter at the end means read from stdin
+    pnmtopng = run(['pnmtopng', '-compression', '9', '-downscale', '-quiet'], stdout=PIPE, input=pdftoppm.stdout)
+    pngToUpload = bytes(pnmtopng.stdout)
+    pngToUploadReadable = BytesIO(pngToUpload)
+    pngToUploadReadableValue = pngToUploadReadable.getvalue()
+
+
+    with Image.open(BytesIO(pnmtopng.stdout)) as im:
+        if rotation is not None:
+            log.debug("Rotating output by %i", rotation)
+            # rotation is a clockwise angle and Image.ROTATE_* is
+            # counterclockwise so this cancels out the rotation
+            if rotation == 90:
+                im = im.transpose(Image.ROTATE_90)
+            elif rotation == 180:
+                im = im.transpose(Image.ROTATE_180)
+            elif rotation == 270:
+                im = im.transpose(Image.ROTATE_270)
+            if rotation % 180 == 90:
+                page_dpi = page_dpi.flip_axis()
+        im.save(fspath(output_file), dpi=dpi) #page_dpi)
+
+
+    # with open(output_file, 'wb') as f:
+    #     f.write(pngToUploadReadableValue)
+    #
+    # with open(f'test_image_{pageno}.png', 'wb') as f:
+    #     f.write(pngToUploadReadableValue)
+
+
+def rasterize_pdf1(
     input_file: os.PathLike,
     output_file: os.PathLike,
     *,
@@ -87,6 +134,9 @@ def rasterize_pdf(
     raster_dpi = raster_dpi.round(6)
     if not page_dpi:
         page_dpi = raster_dpi
+
+    print('HIEEER')
+    print(page_dpi)
 
     args_gs = (
         [
@@ -135,6 +185,7 @@ def rasterize_pdf(
             if rotation % 180 == 90:
                 page_dpi = page_dpi.flip_axis()
         im.save(fspath(output_file), dpi=page_dpi)
+        im.save('TEST_IMAGE.png', dpi=page_dpi)
 
 
 class GhostscriptFollower:
