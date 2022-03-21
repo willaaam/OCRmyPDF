@@ -75,6 +75,7 @@ def rasterize_pdf(
     input_file: os.PathLike,
     output_file: os.PathLike,
     *,
+    tgt_dpi,
     raster_device: str,
     raster_dpi: Resolution,
     pageno: int = 1,
@@ -91,9 +92,9 @@ def rasterize_pdf(
         dataBytesReady = dataBytes.getvalue()  # then read the entire file and store as a variable in memory
     pdftoppm = run(['pdftoppm', '-q', '-scale-to-x', '4000', '-scale-to-y', '-1', '-f', str(pageno), '-l', str(pageno), '-'], stdout=PIPE, input=dataBytesReady)  # pass the stream to pdftoppm as STDIN. - parameter at the end means read from stdin
     pnmtopng = run(['pnmtopng', '-compression', '9', '-downscale', '-quiet'], stdout=PIPE, input=pdftoppm.stdout)
-    pngToUpload = bytes(pnmtopng.stdout)
-    pngToUploadReadable = BytesIO(pngToUpload)
-    pngToUploadReadableValue = pngToUploadReadable.getvalue()
+    # pngToUpload = bytes(pnmtopng.stdout)
+    # pngToUploadReadable = BytesIO(pngToUpload)
+    # pngToUploadReadableValue = pngToUploadReadable.getvalue()
 
 
     with Image.open(BytesIO(pnmtopng.stdout)) as im:

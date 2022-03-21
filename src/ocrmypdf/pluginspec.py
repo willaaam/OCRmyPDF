@@ -164,6 +164,7 @@ def validate(pdfinfo: 'PdfInfo', options: Namespace) -> None:
 def rasterize_pdf_page(
     input_file: Path,
     output_file: Path,
+    tgt_dpi: int,
     raster_device: str,
     raster_dpi: Resolution,
     pageno: int,

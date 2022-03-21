@@ -453,6 +453,7 @@ def rasterize(
     page_context.plugin_manager.hook.rasterize_pdf_page(
         input_file=input_file,
         output_file=output_file,
+        tgt_dpi=page_context.options.target_dpi,
         raster_device=device,
         raster_dpi=canvas_dpi,
         page_dpi=page_dpi,

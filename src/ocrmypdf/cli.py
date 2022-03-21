@@ -146,6 +146,12 @@ Online documentation is located at:
         help="For input image instead of PDF, use this DPI instead of file's.",
     )
     parser.add_argument(
+        '--target-dpi',
+        metavar='tgt-DPI',
+        type=int,
+        help="Target DPI to render image at",
+    )
+    parser.add_argument(
         '--output-type',
         choices=['pdfa', 'pdf', 'pdfa-1', 'pdfa-2', 'pdfa-3', 'none'],
         default='pdfa',

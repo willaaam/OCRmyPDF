@@ -58,6 +58,7 @@ def check_options(options):
 def rasterize_pdf_page(
     input_file,
     output_file,
+    tgt_dpi,
     raster_device,
     raster_dpi,
     pageno,
@@ -68,6 +69,7 @@ def rasterize_pdf_page(
     ghostscript.rasterize_pdf(
         input_file,
         output_file,
+        tgt_dpi=tgt_dpi,
         raster_device=raster_device,
         raster_dpi=raster_dpi,
         pageno=pageno,
