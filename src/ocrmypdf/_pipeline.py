@@ -454,6 +454,7 @@ def rasterize(
         input_file=input_file,
         output_file=output_file,
         tgt_dpi=page_context.options.target_dpi,
+        num_horizontal_pixels=page_context.options.num_horizontal_pixels,
         raster_device=device,
         raster_dpi=canvas_dpi,
         page_dpi=page_dpi,

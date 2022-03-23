@@ -76,6 +76,7 @@ def rasterize_pdf(
     output_file: os.PathLike,
     *,
     tgt_dpi,
+    num_horizontal_pixels:int,
     raster_device: str,
     raster_dpi: Resolution,
     pageno: int = 1,
@@ -90,8 +91,8 @@ def rasterize_pdf(
         # load data into a IO stream buffer
         dataBytes = BytesIO(data.read())  # first read the contents of the link
         dataBytesReady = dataBytes.getvalue()  # then read the entire file and store as a variable in memory
-    pdftoppm = run(['pdftoppm', '-q', '-scale-to-x', '4000', '-scale-to-y', '-1', '-f', str(pageno), '-l', str(pageno), '-'], stdout=PIPE, input=dataBytesReady)  # pass the stream to pdftoppm as STDIN. - parameter at the end means read from stdin
-    pnmtopng = run(['pnmtopng', '-compression', '9', '-downscale', '-quiet'], stdout=PIPE, input=pdftoppm.stdout)
+    pdftoppm = run(['pdftoppm', '-q', '-scale-to-x', str(num_horizontal_pixels), '-scale-to-y', '-1', '-f', str(pageno), '-l', str(pageno), '-'], stdout=PIPE, input=dataBytesReady)  # pass the stream to pdftoppm as STDIN. - parameter at the end means read from stdin
+    pnmtopng = run(['pnmtopng', '-quiet'], stdout=PIPE, input=pdftoppm.stdout)
 
     with Image.open(BytesIO(pnmtopng.stdout)) as im:
         if rotation is not None:

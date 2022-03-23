@@ -165,6 +165,7 @@ def rasterize_pdf_page(
     input_file: Path,
     output_file: Path,
     tgt_dpi: int,
+    num_horizontal_pixels:int,
     raster_device: str,
     raster_dpi: Resolution,
     pageno: int,

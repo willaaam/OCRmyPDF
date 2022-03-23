@@ -152,6 +152,11 @@ Online documentation is located at:
         help="Target DPI to render image at",
     )
     parser.add_argument(
+        '--num-horizontal-pixels',
+        type=int,
+        help="Number of horizontal pixels to rasterize pdf at (y gets scaled proportionally)",
+    )
+    parser.add_argument(
         '--output-type',
         choices=['pdfa', 'pdf', 'pdfa-1', 'pdfa-2', 'pdfa-3', 'none'],
         default='pdfa',
